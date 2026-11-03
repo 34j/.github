@@ -9,13 +9,6 @@ on:
       release:
         type: boolean
         default: true
-    outputs:
-      released:
-        description: Whether semantic-release created a release
-        value: ${{ jobs.release.outputs.released }}
-      tag:
-        description: The semantic-release tag
-        value: ${{ jobs.release.outputs.tag }}
       skip_project:
         type: boolean
         default: false
@@ -25,6 +18,13 @@ on:
       upload_coverage:
         type: boolean
         default: true
+    outputs:
+      released:
+        description: Whether semantic-release created a release
+        value: ${{ jobs.release.outputs.released }}
+      tag:
+        description: The semantic-release tag
+        value: ${{ jobs.release.outputs.tag }}
 
 jobs:
   python-matrix:
