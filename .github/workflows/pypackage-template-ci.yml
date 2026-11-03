@@ -71,7 +71,7 @@ jobs:
             value: ""
           - project_name: Simple CLI
             project_slug: simple-cli
-            value: "--data 'has_cli=yes' --data 'cli_name=mycli'"
+            value: "--data 'has_cli=yes'"
     runs-on: ubuntu-latest
     name: "Generated: ${{ matrix.script.name }} ${{ matrix.extra_options.project_name }}"
     steps:
