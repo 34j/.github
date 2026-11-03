@@ -18,4 +18,7 @@ jobs:
           uvx labels
           -u ${{ github.repository_owner }}
           -t ${{ github.token }}
-          sync -f .github-defaults/.github/labels.toml
+          sync
+          -o ${{ github.repository_owner }}
+          -r ${{ github.event.repository.name }}
+          -f .github-defaults/.github/labels.toml

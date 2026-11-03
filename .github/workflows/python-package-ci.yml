@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: ">=3.12"
       - id: versions
-        uses: 34j/python-dynamic-matrix-from-classifiers@v1.0.0
+        uses: 34j/python-dynamic-matrix-from-classifiers@v1.0.2
 
   lint:
     runs-on: ubuntu-latest
