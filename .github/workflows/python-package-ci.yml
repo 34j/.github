@@ -61,10 +61,7 @@ jobs:
       - uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --no-python-downloads
-        shell: bash
-      - run: uv run pytest
-        shell: bash
+      - run: uv run --frozen pytest
       - if: inputs.upload_coverage
         uses: codecov/codecov-action@v6
 
