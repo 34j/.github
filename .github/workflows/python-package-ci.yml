@@ -9,6 +9,13 @@ on:
       release:
         type: boolean
         default: true
+    outputs:
+      released:
+        description: Whether semantic-release created a release
+        value: ${{ jobs.release.outputs.released }}
+      tag:
+        description: The semantic-release tag
+        value: ${{ jobs.release.outputs.tag }}
       skip_project:
         type: boolean
         default: false
@@ -71,7 +78,9 @@ jobs:
       - lint
       - test
     runs-on: ubuntu-latest
-    environment: release
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      tag: ${{ steps.release.outputs.tag }}
     concurrency: release
     steps:
       - uses: actions/checkout@v6
@@ -97,9 +106,13 @@ jobs:
         if: steps.release.outputs.released == 'true'
         with:
           subject-path: dist/*
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.14.0
+      - name: Upload package distributions
+        uses: actions/upload-artifact@v4
         if: steps.release.outputs.released == 'true' && inputs.publish_to_pypi
+        with:
+          name: python-package-dist
+          path: dist/
+          if-no-files-found: error
       - name: Publish package distributions to GitHub Releases
         uses: python-semantic-release/publish-action@v10.5.3
         if: steps.release.outputs.released == 'true'
