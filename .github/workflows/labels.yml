@@ -1,0 +1,21 @@
+name: Reusable label synchronization
+
+on:
+  workflow_call:
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          repository: 34j/.github
+          ref: main
+          path: .github-defaults
+      - uses: astral-sh/setup-uv@v8.1.0
+      - name: Sync labels
+        run: >-
+          uvx labels
+          -u ${{ github.repository_owner }}
+          -t ${{ github.token }}
+          sync -f .github-defaults/.github/labels.toml

@@ -1,0 +1,87 @@
+name: Reusable Python package CI
+
+on:
+  workflow_call:
+
+jobs:
+  python-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ">=3.11"
+      - id: versions
+        uses: 34j/python-dynamic-matrix-from-classifiers@v1.0.0
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.1.0
+      - uses: j178/prek-action@v2.0.3
+
+  test:
+    needs: python-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(needs.python-matrix.outputs.versions) }}
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --no-python-downloads
+        shell: bash
+      - run: uv run pytest
+        shell: bash
+      - uses: codecov/codecov-action@v6
+
+  release:
+    needs:
+      - lint
+      - test
+    runs-on: ubuntu-latest
+    environment: release
+    concurrency: release
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Checkout commit for release
+        run: git checkout -B ${{ github.ref_name }} ${{ github.sha }}
+      - name: Test release
+        uses: python-semantic-release/python-semantic-release@v10.5.3
+        if: github.ref_name != 'main'
+        with:
+          no_operation_mode: true
+          github_token: noop
+      - name: Release
+        uses: python-semantic-release/python-semantic-release@v10.5.3
+        if: github.ref_name == 'main'
+        id: release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        if: steps.release.outputs.released == 'true'
+        with:
+          subject-path: dist/*
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.14.0
+        if: steps.release.outputs.released == 'true'
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/publish-action@v10.5.3
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.release.outputs.tag }}
