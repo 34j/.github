@@ -18,6 +18,9 @@ on:
       upload_coverage:
         type: boolean
         default: true
+      sync_command:
+        type: string
+        default: uv sync --all-extras --frozen
     outputs:
       released:
         description: Whether semantic-release created a release
@@ -44,6 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.1.0
+      - run: ${{ inputs.sync_command }}
       - uses: j178/prek-action@v2.0.3
         with:
           extra-args: ${{ inputs.skip_project && '--all-files --skip project/' || '--all-files' }}
@@ -68,7 +72,7 @@ jobs:
       - uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv run --frozen pytest
+      - run: uv run --all-extras --frozen pytest
       - if: inputs.upload_coverage
         uses: codecov/codecov-action@v6
 
