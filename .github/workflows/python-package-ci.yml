@@ -18,6 +18,9 @@ on:
       upload_coverage:
         type: boolean
         default: true
+      tkinter:
+        type: boolean
+        default: false
       sync_command:
         type: string
         default: uv sync --all-extras --frozen
@@ -69,9 +72,18 @@ jobs:
         run: |
           git config --global user.name actions-user
           git config --global user.email action@github.com
+      - id: python
+        if: inputs.tkinter
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
       - uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version: ${{ matrix.python-version }}
+      - if: inputs.tkinter
+        run: echo "UV_PYTHON=${{ steps.python.outputs.python-path }}" >> "$GITHUB_ENV"
+      - if: inputs.tkinter
+        run: uv run --all-extras --frozen python -c "import tkinter"
       - run: uv run --all-extras --frozen pytest
       - if: inputs.upload_coverage
         uses: codecov/codecov-action@v6
