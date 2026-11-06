@@ -54,6 +54,10 @@ jobs:
       - uses: j178/prek-action@v2.0.3
         with:
           extra-args: ${{ inputs.skip_project && '--all-files --skip project/' || '--all-files' }}
+      - uses: autofix-ci/action@v1
+        with:
+          fail-fast: false
+          commit-message: "style(prek): run prek"
 
   test:
     needs: python-matrix
