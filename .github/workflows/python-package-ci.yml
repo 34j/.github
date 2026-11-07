@@ -145,11 +145,11 @@ jobs:
         with:
           config_file: ${{ steps.semantic-release-config.outputs.path }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Attest build provenance
-        uses: actions/attest@v4
-        if: steps.release.outputs.released == 'true'
-        with:
-          subject-path: dist/*
+      # - name: Attest build provenance
+      #   uses: actions/attest@v4
+      #   if: steps.release.outputs.released == 'true'
+      #   with:
+      #     subject-path: dist/*
       - name: Upload package distributions
         uses: actions/upload-artifact@v4
         if: steps.release.outputs.released == 'true' && inputs.publish_to_pypi
