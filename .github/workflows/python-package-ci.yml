@@ -90,7 +90,7 @@ jobs:
       - if: inputs.tkinter
         run: uv run --all-extras --frozen python -c "import tkinter"
       # https://github.com/scikit-image/scikit-image/pull/8316
-      - if: matrix.os == 'windows-latest'
+      - if: contains(matrix.os, 'windows')
         shell: pwsh
         run: Add-Content -Path $env:GITHUB_ENV -Value "MPLBACKEND=Agg"
       - run: uv run --all-extras --frozen pytest
