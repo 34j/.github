@@ -1,4 +1,4 @@
-name: Reusable Python package CI
+name: autofix.ci
 
 on:
   workflow_call:
