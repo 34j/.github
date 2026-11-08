@@ -49,13 +49,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.versions.outputs.versions }}
+      oses: ${{ steps.versions.outputs.oses }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: ">=3.12"
       - id: versions
-        uses: 34j/python-dynamic-matrix-from-classifiers@v1.0.2
+        uses: 34j/python-dynamic-matrix-from-classifiers@main
 
   lint:
     strategy:
@@ -86,10 +87,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ${{ fromJSON(needs.python-matrix.outputs.versions) }}
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+        os: ${{ fromJSON(needs.python-matrix.outputs.oses) }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
