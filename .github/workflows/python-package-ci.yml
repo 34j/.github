@@ -24,6 +24,24 @@ on:
       sync_command:
         type: string
         default: uv sync --all-extras --frozen
+      command_linux_lint:
+        type: string
+        default: ""
+      command_macos_lint:
+        type: string
+        default: ""
+      command_windows_lint:
+        type: string
+        default: ""
+      command_linux_test:
+        type: string
+        default: ""
+      command_macos_test:
+        type: string
+        default: ""
+      command_windows_test:
+        type: string
+        default: ""
     outputs:
       released:
         description: Whether semantic-release created a release
@@ -46,10 +64,23 @@ jobs:
         uses: 34j/python-dynamic-matrix-from-classifiers@v1.0.2
 
   lint:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.1.0
+      - if: startsWith(matrix.os, 'ubuntu') && inputs.command_linux_lint != ''
+        run: ${{ inputs.command_linux_lint }}
+      - if: startsWith(matrix.os, 'macos') && inputs.command_macos_lint != ''
+        run: ${{ inputs.command_macos_lint }}
+      - if: startsWith(matrix.os, 'windows') && inputs.command_windows_lint != ''
+        run: ${{ inputs.command_windows_lint }}
       - run: ${{ inputs.sync_command }}
       - uses: j178/prek-action@v2.0.3
         with:
@@ -91,6 +122,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - if: inputs.tkinter
         run: echo "UV_PYTHON=${{ steps.python.outputs.python-path }}" >> "$GITHUB_ENV"
+      - if: startsWith(matrix.os, 'ubuntu') && inputs.command_linux_test != ''
+        run: ${{ inputs.command_linux_test }}
+      - if: startsWith(matrix.os, 'macos') && inputs.command_macos_test != ''
+        run: ${{ inputs.command_macos_test }}
+      - if: startsWith(matrix.os, 'windows') && inputs.command_windows_test != ''
+        run: ${{ inputs.command_windows_test }}
       - if: inputs.tkinter
         run: uv run --all-extras --frozen python -c "import tkinter"
       # https://github.com/scikit-image/scikit-image/pull/8316
