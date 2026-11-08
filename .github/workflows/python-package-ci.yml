@@ -24,13 +24,7 @@ on:
       sync_command:
         type: string
         default: uv sync --all-extras --frozen
-      command_linux_lint:
-        type: string
-        default: ""
-      command_macos_lint:
-        type: string
-        default: ""
-      command_windows_lint:
+      command_lint:
         type: string
         default: ""
       command_linux_test:
@@ -66,21 +60,12 @@ jobs:
   lint:
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.1.0
-      - if: startsWith(matrix.os, 'ubuntu') && inputs.command_linux_lint != ''
-        run: ${{ inputs.command_linux_lint }}
-      - if: startsWith(matrix.os, 'macos') && inputs.command_macos_lint != ''
-        run: ${{ inputs.command_macos_lint }}
-      - if: startsWith(matrix.os, 'windows') && inputs.command_windows_lint != ''
-        run: ${{ inputs.command_windows_lint }}
+      - if: inputs.command_lint != ''
+        run: ${{ inputs.command_lint }}
       - run: ${{ inputs.sync_command }}
       - uses: j178/prek-action@v2.0.3
         with:
