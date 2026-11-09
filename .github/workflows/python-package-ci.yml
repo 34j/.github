@@ -76,10 +76,10 @@ jobs:
       #   with:
       #     fail-fast: false
       #     commit-message: "style(prek): run prek"
-      # - uses: pre-commit-ci/lite-action@v1.2.0
-      #   if: success() || failure()
-      #   with:
-      #     msg: "style(prek): run prek"
+      - uses: pre-commit-ci/lite-action@v1.2.0
+        if: success() || failure()
+        with:
+          msg: "style(prek): run prek"
 
   test:
     needs: python-matrix
