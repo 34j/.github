@@ -59,11 +59,16 @@ jobs:
         uses: 34j/python-dynamic-matrix-from-classifiers@main
 
   lint:
+    if: "github.event.action != 'labeled' || github.event.label.name == 'pre-commit ci run'"
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - run: gh pr edit ${{ github.event.number }} --remove-label 'pre-commit ci run'
+        if: github.event.action == 'labeled' && github.event.label.name == 'pre-commit ci run'
+        env:
+          GH_TOKEN: ${{ github.token }}
       - uses: astral-sh/setup-uv@v8.1.0
       - if: inputs.command_lint != ''
         run: ${{ inputs.command_lint }}
