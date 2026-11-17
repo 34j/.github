@@ -22,7 +22,7 @@ Closes #<issue-number>
 ### LLM use
 
 - I used gpt-5.6-terra/opus-5.5/qwen3.7-plus **(replace with the appropriate model name)** with Claude Code/Codex/GitHub Copilot/Hermes/Pi/Cursor **(replace with the appropriate tool name)**.
-- The code was entirely generated/partially generated/not generated **(select one)** by an LLM, and the user never read/took a glance at/fully read each line **(select one)** of the code.
+- The code was [entirely generated]/[partially generated]/[not generated] **(select one)** by an LLM, and the user [never read]/[took a glance at]/[fully read each line] **(select one)** of the code.
 
 <!--
   🎉 Thank you for contributing!
